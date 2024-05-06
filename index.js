@@ -64,6 +64,36 @@ async function run() {
             const result = await paintingCollection.findOne(queary);
             res.send(result);
         })
+        app.post('/painting', async (req, res) => {
+            const newCard = req.body;
+            console.log('newCard: ', newCard);
+            const result = await paintingCollection.insertOne(newCard);
+            res.send(result);
+        })
+
+        app.put('/painting/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const option = { upsert: true };
+            const updatedCard = req.body;
+
+            const product = {
+                $set: {
+                    item_name: updatedCard.item_name,
+                    subcategory_name: updatedCard.subcategory_name,
+                    short_description: updatedCard.short_description,
+                    price: updatedCard.price,
+                    rating: updatedCard.rating,
+                    customization: updatedCard.customization,
+                    processing_time: updatedCard.processing_time,
+                    stock_status: updatedCard.stock_status,
+                    email: updatedCard.email,
+                    photo: updatedCard.photo
+                }
+            }
+            const result = await paintingCollection.updateOne(filter, product, option);
+            res.send(result);
+        })
 
         app.delete('/painting/:id', async (req, res) => {
             const id = req.params.id;
@@ -71,6 +101,15 @@ async function run() {
             const result = await paintingCollection.deleteOne(queary);
             res.send(result);
         })
+
+        app.get("/myProduct/:email", async (req, res) => {
+            console.log(req.params.email);
+            const result = await paintingCollection.find({ email: req.params.email }).toArray();
+            res.send(result)
+        })
+
+
+
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
