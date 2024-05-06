@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 require('dotenv').config()
 
@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        
+
         const userCollection = client.db('paintingDB').collection('user')
 
         app.get('/user', async (req, res) => {
@@ -49,6 +49,28 @@ async function run() {
             res.send(result);
         })
 
+        // CRUD
+        const paintingCollection = client.db('paintingDB').collection('painting')
+
+        app.get('/painting', async (req, res) => {
+            const cursor = paintingCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/painting/:id', async (req, res) => {
+            const id = req.params.id;
+            const queary = { _id: new ObjectId(id) };
+            const result = await paintingCollection.findOne(queary);
+            res.send(result);
+        })
+
+        app.delete('/painting/:id', async (req, res) => {
+            const id = req.params.id;
+            const queary = { _id: new ObjectId(id) };
+            const result = await paintingCollection.deleteOne(queary);
+            res.send(result);
+        })
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
