@@ -64,6 +64,7 @@ async function run() {
             const result = await paintingCollection.findOne(queary);
             res.send(result);
         })
+
         app.post('/painting', async (req, res) => {
             const newCard = req.body;
             console.log('newCard: ', newCard);
@@ -94,11 +95,19 @@ async function run() {
             const result = await paintingCollection.updateOne(filter, product, option);
             res.send(result);
         })
-
         app.delete('/painting/:id', async (req, res) => {
             const id = req.params.id;
             const queary = { _id: new ObjectId(id) };
             const result = await paintingCollection.deleteOne(queary);
+            res.send(result);
+        })
+
+
+        app.get("/seeDetails/:id", async (req, res) => {
+            const id = req.params.id;
+            console.log('See Details ID:', id);
+            const queary = { _id: new ObjectId(id) };
+            const result = await paintingCollection.findOne(queary);
             res.send(result);
         })
 
@@ -109,6 +118,22 @@ async function run() {
         })
 
 
+        // Feedback
+        const feedbackCollection = client.db('paintingDB').collection('feedback')
+        app.get('/feedback', async (req, res) => {
+            const cursor = feedbackCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post('/feedback', async (req, res) => {
+            const newCard = req.body;
+            console.log('newCard: ', newCard);
+            const result = await feedbackCollection.insertOne(newCard);
+            res.send(result);
+        })
+
+        
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
